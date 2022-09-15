@@ -8,66 +8,80 @@
 
 import React, { useState } from 'react';
 
-import { ScrollView, View, Text, StyleSheet, RefreshControl } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, RefreshControl, FlatList, SectionList } from 'react-native';
 
 
 const App = () => {
-  const [Items, setItems] = useState([
-    { key: 1, item: "Item 1" },
-    { key: 2, item: "Item 2" },
-    { key: 3, item: "Item 3" },
-    { key: 4, item: "Item 4" },
-    { key: 5, item: "Item 5" },
-    { key: 6, item: "Item 6" },
-    { key: 7, item: "Item 7" },
-    { key: 8, item: "Item 8" },
-    { key: 9, item: "Item 9" },
-    { key: 10, item: "Item 10" },
-    { key: 11, item: "Item 11" },
-    { key: 12, item: "Item 12" },
+  
+  const [Sections, setSections] = useState([
+    {
+      title: "Title 1",
+      data: ['Item 1-1', 'Item 1-2']
+    }
   ])
 
   const [Refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {
     setRefreshing(true);
-    setItems([...Items, { key: 13, item: "Item 13" }]);
+    const addingIndex = Sections.length + 1;
+
+    setSections([...Sections,
+      {
+        title: 'Title ' + addingIndex,
+        data: [
+          'Item ' + addingIndex + '-1',
+          'Item ' + addingIndex + '-2',
+        ]
+      }
+    ])
     setRefreshing(false);
   }
+  // horizontal={true}
+  // inverted={true}
   return (
-    <ScrollView refreshControl={
-      <RefreshControl refreshing={Refreshing}
-        onRefresh={onRefresh} />
-    } style={styles.body}>
-      {
-        Items.map((itemObj) => {
-          return (
-            <View style={styles.item} key={itemObj.key}>
-              <Text style={styles.text}>{itemObj.item}</Text>
-            </View>
-          )
-        })
+    <SectionList
+      keyExtractor={(item, index) => index.toString()}
+      sections={Sections}
+      renderItem={({item}) => (
+        <View style={styles.item}>
+        <Text style={styles.text_item}>{item}</Text>
+      </View >
+      )}
+      renderSectionHeader={({ section }) => (
+        <View style={styles.header}>
+        <Text style={styles.text_header}>{section.title}</Text>
+      </View>
+      )}
+      refreshControl={
+        <RefreshControl refreshing={Refreshing}
+          onRefresh={onRefresh} />
       }
-    </ScrollView>
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#ffffff',
-  },
-  item: {
-    margin: 10,
+  header: {
     backgroundColor: '#4ae1fa',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
   },
-  text: {
+  item: {
+    borderBottomWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text_header: {
     color: '#000000',
     fontSize: 45,
     fontStyle: 'italic',
     margin: 10,
+  },
+  text_item: {
+    color: '#000000',
+    fontSize: 35,
+    margin: 5,
   },
 });
 
